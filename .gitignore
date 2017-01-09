@@ -14,3 +14,7 @@ TestResults
 .vs/
 
 *.user
+
+**/.idea
+**/packages
+UpgradeLog.htm
