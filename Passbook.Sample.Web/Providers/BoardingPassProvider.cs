@@ -1,31 +1,29 @@
 ﻿using System;
-using System.Collections.Generic;
 using Passbook.Generator;
 using Passbook.Generator.Configuration;
 using Passbook.Generator.Fields;
 
-namespace Passbook.Sample.Web
+namespace Passbook.Sample.Web.Providers
 {
     public class BoardingPassProvider : Passbook.Web.PassProvider
     {
-        public override string PassTypeIdentifier
-        {
-            get { return "pass.tomsamcguinness.travel"; }
-        }
+        public override string PassTypeIdentifier => "pass.tomsamcguinness.travel";
 
         public override bool IsUpdating()
         {
             return false;
         }
 
-        public override Passbook.Generator.PassGeneratorRequest GetPass(string serialNumber)
+        public override PassGeneratorRequest GetPass(string serialNumber)
         {
-            PassGeneratorRequest request = new PassGeneratorRequest();
+            var request = new PassGeneratorRequest
+            {
+                PassTypeIdentifier = PassTypeIdentifier,
+                SerialNumber = Guid.NewGuid().ToString("D")
+            };
 
-            request.PassTypeIdentifier = PassTypeIdentifier;
-            request.SerialNumber = Guid.NewGuid().ToString("D");
 
-            TemplateModel parameters = new TemplateModel();
+            var parameters = new TemplateModel();
 
             parameters.AddField("origin", FieldAttribute.Label, "San Francisco");
             parameters.AddField("origin", FieldAttribute.Value, "SFO");
@@ -37,7 +35,8 @@ namespace Passbook.Sample.Web
             parameters.AddField("boarding-gate", FieldAttribute.Value, "F12");
             parameters.AddField("passenger-name", FieldAttribute.Value, "John Appleseed");
 
-            request.AddBarCode("M1APPLESEED/JMR EZQ7O92 GVALHRBA 00723319C002F00009100", BarcodeType.PKBarcodeFormatPDF417, "iso-8859-1");
+            request.AddBarcode(BarcodeType.PKBarcodeFormatPDF417,
+                "M1APPLESEED/JMR EZQ7O92 GVALHRBA 00723319C002F00009100", "iso-8859-1");
 
             request.LoadTemplate("BoardingPass", parameters);
 
@@ -45,4 +44,3 @@ namespace Passbook.Sample.Web
         }
     }
 }
-
